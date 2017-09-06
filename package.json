@@ -1,6 +1,6 @@
 {
   "name": "raj-compose",
-  "description": "Single Page Apps for Raj",
+  "description": "Program composition for Raj",
   "version": "0.0.0",
   "author": "Chris Andrejewski <christopher.andrejewski@gmail.com>",
   "babel": {
@@ -30,10 +30,10 @@
   ],
   "homepage": "https://github.com/andrejewski/raj-compose#readme",
   "keywords": [
-    "best",
-    "framework",
-    "react",
-    "runtime"
+    "composition",
+    "effect",
+    "program",
+    "raj"
   ],
   "license": "MIT",
   "main": "lib/index.js",
