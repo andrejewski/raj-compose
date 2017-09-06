@@ -1,3 +1,12 @@
 language: node_js
 node_js:
 - node
+deploy:
+  provider: npm
+  email: christopher.andrejewski@gmail.com
+  api_key:
+    secure: TmVX0hvWq1hxf8/y4orAxydsthYD6T/4/5paX3Sq78xi0DGufRH4Qoj40iu8emzJ2jmUFRK69PkbJV38TzkLukGO9CMrSYEpVHF5ZkrLbcQy0VtTr//rIFyd+xTAvCaIOIE0TG71a3YP6rs1vnI1UvR9at8MwGX9rKrw/dXC/J/y25h9XoO56jiGYq2qsc92m6cDAf2SGrQyUP4NYzZxA9SX7lBWb//QGaghYU4257H/D2ahNOGfEvd6zlesOC1+FOnlEaq6OtnoTXDlV8s1csoUTi4cdrGq4Ag3fcj6P026qYn7IoZ6cr0vdvQEtPTUnRF6/j55bjcW8y/7k6HiD2i2mL3FsEi1nqCBO9y2xwQOolrb45N2Q+fVCTqzpJx4kEIBgXWYDK9uk+D2woZLqQr6PxKhsB6ppaBYuviN4cwmsuYIaoiPnIJnINY5JIbeudOQ3uPRRBIy1jjbJnQO0b/6VPefAzamsTPq8v4h3HN9QS5VfP/gZ9srZCxowNS3Ifxl/TdQwktQdK7/AUS1UKyGn95PWglUJtS0/ntAktH6VLbalvvEbjN6CRBG0UIHs7GOVv0hO4irVPgPBcYSPqImQDmVI8fYOFICR2ZvhmZYI5uPeHOsDGeQagvV3cZbbnrpSioO28Yhqr1mHH8hjCFdiU2aaWKilZ1fmHK5Hr8=
+  on:
+    tags: true
+    repo: andrejewski/raj-compose
+  skip_cleanup: true
