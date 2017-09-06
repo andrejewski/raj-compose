@@ -1,0 +1,130 @@
+# Raj Compose
+
+> Program composition for [Raj](https://github.com/andrejewski/raj)
+
+```sh
+npm install raj-compose
+```
+
+[![npm](https://img.shields.io/npm/v/raj-compose.svg)](https://www.npmjs.com/package/raj-compose)
+[![Build Status](https://travis-ci.org/andrejewski/raj-compose.svg?branch=master)](https://travis-ci.org/andrejewski/raj-compose)
+
+The `raj-compose` package contains utilities to reduce the boilerplate of
+building up large applications from small programs.
+
+## Documentation
+The package contains the following utilities:
+
+- `mapEffect(effect, callback)`
+- `batchEffects(effects)`
+- `mapProgram(program, callback)`
+- `batchPrograms(programs, containerView)`
+
+### `mapEffect(effect: function?, callback(any): any): function?`
+The `mapEffect` function "lifts" a given `effect` so that `callback` transforms
+  each message produced by that effect before dispatch.
+
+The `mapEffect` function accepts a `effect` function or a falsey value and a
+  `callback` function.
+If the `effect` is truthy but not a function, an error will throw.
+If the `callback` is not a function, an error will throw.
+The `mapEffect` returns either the falsey `effect` value or a new effect function.
+
+#### Example
+We want to distinguish the messages dispatched by an effect.
+We use `mapEffect` to wrap each message in an "important" wrapper.
+
+```js
+import assert from 'assert'
+import {mapEffect} from 'raj-compose'
+
+const effect = dispatch => {
+  dispatch('Hello')
+  dispatch('World')
+}
+
+const importantEffect = mapEffect(effect, message => ({
+  type: 'important',
+  value: message
+}))
+
+const messages = []
+importantEffect(message => {
+  messages.push(message)
+})
+
+assert.deepEqual(messages, [
+  {type: 'important', value: 'Hello'},
+  {type: 'important', value: 'World'}
+])
+```
+
+### `batchEffects(effects: Array<function?>): function`
+The `batchEffects` function takes an array of `effects` and returns a new
+  function which will call each effect.
+If an effect is truthy but not a function, an error will throw.
+
+#### Example
+We have two effects we want to run together.
+We use `batchEffects` to combine them into a single effect.
+
+```js
+import assert from 'assert'
+import {batchEffects} from 'raj-compose'
+
+const one = dispatch => dispatch('Hello')
+const two = dispatch => dispatch('World')
+const all = batchEffects([one, two])
+
+const messages = []
+all(message => {
+  messages.push(message)
+})
+
+assert.deepEqual(messages, [
+  'Hello',
+  'World'
+])
+```
+
+### `mapProgram(program: RajProgram, callback): RajProgram`
+Like `mapEffect`, `mapProgram` "lifts" all messages from `program` with the  `callback` function and returns a new program.
+If `program` is not shaped like a Raj program, an error will throw.
+If `callback` is not a function, an error will throw.
+
+The `mapProgram` function:
+- transforms the `program.init` optional effect messages with `callback`
+- transforms each `program.update()` optional effect messages with `callback`
+- transforms each `program.view()` dispatched message with `callback`
+
+This function encapsulates all program messages for its parent program to pass down to the child.
+
+The new program's `update()` parameters are the same as the original's.
+The `view()` `state` is the child program's state and `dispatch` is the parent's dispatch function.
+
+### `batchPrograms(programs: Array<RajProgram>, containerView: function): RajProgram`
+The `batchPrograms` function takes an array of programs and a `containerView` and create a new program which manages those child programs.
+If any item in the `programs` array is not a program, an error will throw.
+If `containerView` is not a function, an error will throw.
+
+The containerView receives an array of function, each respective to the programs in the `programs` array that when called return a view to nest somewhere in the parent view.
+
+#### Example
+We have a main view and a sidebar view that we would like to display at the same time. We are using React as our view layer so we are using JSX to describe our HTML. We use the `batchPrograms` to unite the two programs in the same app view.
+
+```js
+import React from 'react'
+import {batchPrograms} from 'raj-compose'
+import mainProgram from './main'
+import sidebarProgram from './sidebar'
+
+export default batchPrograms(
+  [mainProgram, sidebarProgram],
+  ([mainView, sideView]) => (
+    <div id='app'>
+      <div id='side'>{sideView()}</div>
+      <div id='main'>{mainView()}</div>
+    </div>
+  )
+)
+```
