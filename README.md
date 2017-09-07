@@ -1,7 +1,4 @@
 # Raj Compose
-
-[![Greenkeeper badge](https://badges.greenkeeper.io/andrejewski/raj-compose.svg)](https://greenkeeper.io/)
-
 > Program composition for [Raj](https://github.com/andrejewski/raj)
 
 ```sh
@@ -10,6 +7,7 @@ npm install raj-compose
 
 [![npm](https://img.shields.io/npm/v/raj-compose.svg)](https://www.npmjs.com/package/raj-compose)
 [![Build Status](https://travis-ci.org/andrejewski/raj-compose.svg?branch=master)](https://travis-ci.org/andrejewski/raj-compose)
+[![Greenkeeper badge](https://badges.greenkeeper.io/andrejewski/raj-compose.svg)](https://greenkeeper.io/)
 
 The `raj-compose` package contains utilities to reduce the boilerplate of
 building up large applications from small programs.
