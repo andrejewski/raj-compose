@@ -1,5 +1,7 @@
 # Raj Compose
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/andrejewski/raj-compose.svg)](https://greenkeeper.io/)
+
 > Program composition for [Raj](https://github.com/andrejewski/raj)
 
 ```sh
