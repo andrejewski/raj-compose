@@ -68,7 +68,7 @@ function batchPrograms (programs, containerView) {
   invariant(typeof containerView === 'function', 'containerView must be a function')
 
   const taggers = programs.map(
-    ({displayName}) => displayName ? tag(displayName) : tag()
+    ({displayName}) => displayName ? tag(displayName + 'Msg') : tag()
   )
   const Msg = tag.union(taggers)
   const embeds = programs.map(
@@ -90,8 +90,9 @@ function batchPrograms (programs, containerView) {
       const fn = programMsg => {
         const programState = state[index]
         const [nextProgramState, effect] = embed.update(programMsg, programState)
-        state[index] = nextProgramState
-        return [state, effect]
+        const newState = state.slice(0)
+        newState[index] = nextProgramState
+        return [newState, effect]
       }
       return [...cases, tagger, fn]
     }, []))
