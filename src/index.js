@@ -39,6 +39,7 @@ function ensureProgram (program) {
   invariant(Array.isArray(program.init), 'program.init must be an array')
   invariant(typeof program.update === 'function', 'program.update must be a function')
   invariant(typeof program.view === 'function', 'program.view must be a function')
+  invariant(!program.done || typeof program.done === 'function', 'program.done must be a function if included')
 }
 
 function mapProgram (program, callback) {
@@ -58,7 +59,7 @@ function mapProgram (program, callback) {
     return program.view(state, msg => dispatch(callback(msg)))
   }
 
-  return {init, update, view}
+  return {init, update, view, done: program.done}
 }
 
 function batchPrograms (programs, containerView) {
@@ -106,7 +107,16 @@ function batchPrograms (programs, containerView) {
     return containerView(programViews)
   }
 
-  return {init, update, view}
+  function done (state) {
+    const programDones = embeds.map(
+      (embed, index) => embed.done
+        ? embed.done(state[index])
+        : undefined
+    )
+    return batchEffects(programDones)
+  }
+
+  return {init, update, view, done}
 }
 
 module.exports = {

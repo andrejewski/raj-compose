@@ -1,10 +1,9 @@
 import test from 'ava'
 import {
   mapEffect,
-  batchEffects
-
-  // mapProgram,
-  // batchPrograms
+  batchEffects,
+  mapProgram,
+  batchPrograms
 } from '../src'
 
 test('mapEffect() transforms any dispatched messages', t => {
@@ -98,4 +97,62 @@ test('batchEffects() should throw if any effect is a truthy non-function', t => 
   const goodEffect = () => {}
   t.throws(() => batchEffects([badEffect]), /must be functions/)
   t.throws(() => batchEffects([badEffect, goodEffect]), /must be functions/)
+})
+
+test('mapProgram() should return a done if the original program does', t => {
+  const subProgramWithDone = {
+    init: ['foo'],
+    update () {},
+    view () {},
+    done (state) {
+      t.is(state, 'foo')
+      return () => {}
+    }
+  }
+
+  const subProgramWithoutDone = {
+    init: ['bar'],
+    update () {},
+    view () {}
+  }
+
+  const doneProgram = mapProgram(subProgramWithDone, x => x)
+  const notDoneProgram = mapProgram(subProgramWithoutDone, x => x)
+
+  t.is(typeof doneProgram.done, 'function')
+  const [state] = doneProgram.init
+  const effect = doneProgram.done(state)
+  t.is(typeof effect, 'function')
+
+  t.is(notDoneProgram.done, undefined)
+})
+
+test('batchPrograms() should return a done which calls sub program dones', t => {
+  t.plan(3)
+
+  const subProgramWithDone = {
+    init: ['foo'],
+    update () {},
+    view () {},
+    done (state) {
+      t.is(state, 'foo')
+    }
+  }
+
+  const subProgramWithoutDone = {
+    init: ['bar'],
+    update () {},
+    view () {}
+  }
+
+  const program = batchPrograms([
+    subProgramWithDone,
+    subProgramWithoutDone
+  ], () => {})
+
+  t.is(typeof program.done, 'function')
+
+  const [state] = program.init
+  const effect = program.done(state)
+  t.is(typeof effect, 'function')
 })
