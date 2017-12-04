@@ -108,12 +108,11 @@ function batchPrograms (programs, containerView) {
   }
 
   function done (state) {
-    const programDones = embeds.map(
-      (embed, index) => embed.done
-        ? embed.done(state[index])
-        : undefined
-    )
-    return batchEffects(programDones)
+    embeds.forEach((embed, index) => {
+      if (embed.done) {
+        embed.done(state[index])
+      }
+    })
   }
 
   return {init, update, view, done}

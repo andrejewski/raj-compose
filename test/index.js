@@ -128,7 +128,7 @@ test('mapProgram() should return a done if the original program does', t => {
 })
 
 test('batchPrograms() should return a done which calls sub program dones', t => {
-  t.plan(3)
+  t.plan(2)
 
   const subProgramWithDone = {
     init: ['foo'],
@@ -153,6 +153,5 @@ test('batchPrograms() should return a done which calls sub program dones', t => 
   t.is(typeof program.done, 'function')
 
   const [state] = program.init
-  const effect = program.done(state)
-  t.is(typeof effect, 'function')
+  program.done(state)
 })
