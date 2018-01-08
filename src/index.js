@@ -88,16 +88,16 @@ function batchPrograms (programs, containerView) {
 
   function update (msg, state) {
     return Msg.match(msg, embeds.reduce((cases, embed, index) => {
-      const tagger = taggers[index]
-      const fn = programMsg => {
+      const kind = kinds[index]
+      cases[kind] = programMsg => {
         const programState = state[index]
         const [nextProgramState, effect] = embed.update(programMsg, programState)
         const newState = state.slice(0)
         newState[index] = nextProgramState
         return [newState, effect]
       }
-      return [...cases, tagger, fn]
-    }, []))
+      return cases
+    }, {}))
   }
 
   function view (state, dispatch) {
@@ -119,10 +119,15 @@ function batchPrograms (programs, containerView) {
   return {init, update, view, done}
 }
 
+function assembleProgram ({data, view, logic, deps, options}) {
+  return Object.assign({view}, logic(data(deps, options), options))
+}
+
 module.exports = {
   mapEffect,
   batchEffects,
 
   mapProgram,
-  batchPrograms
+  batchPrograms,
+  assembleProgram
 }
