@@ -1,4 +1,4 @@
-const tag = require('tagmeme')
+const {union} = require('tagmeme')
 const invariant = require('invariant')
 
 function mapEffect (effect, callback) {
@@ -68,10 +68,11 @@ function batchPrograms (programs, containerView) {
   }
   invariant(typeof containerView === 'function', 'containerView must be a function')
 
-  const taggers = programs.map(
-    ({displayName}) => displayName ? tag(displayName + 'Msg') : tag()
+  const kinds = programs.map(
+    ({displayName}, index) => (displayName || 'Program' + index) + 'Msg'
   )
-  const Msg = tag.union(taggers)
+  const Msg = union(kinds)
+  const taggers = kinds.map(kind => Msg[kind])
   const embeds = programs.map(
     (program, index) => mapProgram(program, taggers[index])
   )
