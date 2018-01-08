@@ -19,6 +19,7 @@ The package contains the following utilities:
 - `batchEffects(effects)`
 - `mapProgram(program, callback)`
 - `batchPrograms(programs, containerView)`
+- `assembleProgram({data, view, logic, deps, options})`
 
 ### `mapEffect(effect: function?, callback(any): any): function?`
 The `mapEffect` function "lifts" a given `effect` so that `callback` transforms
@@ -127,4 +128,58 @@ export default batchPrograms(
     </div>
   )
 )
+```
+
+### `assembleProgram({data, view, logic, deps, options}): RajProgram`
+The `assembleProgram` function takes three functions: `data(deps, options)`, `view(model, dispatch)`, and `logic(data(deps, options), options)`.
+The `deps`, `options`, and return value of `data` can be anything that makes sense to the program.
+This will return a program where `logic()` would return an object containing `{init, update, done, ...}` properties that merge in with `view`.
+
+This function is good for separating the concerns common to most programs: data-fetching, views, and business logic.
+The assemble pattern is useful as each function can be tested in isolation.
+Structuring programs in this manner is recommended when data-fetching is involved.
+
+```js
+import {assembleProgram} from 'raj-compose'
+
+export const data = ({httpClient}) => ({
+  getPosts (dispatch) {
+    httpClient.get('/posts')
+      .then(data => dispatch({data}))
+      .catch(error => dispatch({error}))
+  }
+})
+
+export function view (model, dispatch) {
+  // show a list of posts
+}
+
+export function logic (data) {
+  const init = [
+    {
+      posts: [],
+      loadError: null
+    },
+    data.getPosts
+  ]
+
+  function update (msg, model) {
+    if (msg.error) {
+      return [{...model, loadError: model.error}]
+    } else {
+      return [{...model, posts: msg.data.posts}]
+    }
+  }
+
+  return {init, update}
+}
+
+export function makeProgram (httpClient) {
+  return assembleProgram({
+    data,
+    view,
+    logic,
+    deps: {httpClient}
+  })
+}
 ```
