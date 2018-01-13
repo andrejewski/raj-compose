@@ -123,11 +123,8 @@ function assembleProgram ({data, view, logic, deps, options}) {
   return Object.assign({view}, logic(data(deps, options), options))
 }
 
-module.exports = {
-  mapEffect,
-  batchEffects,
-
-  mapProgram,
-  batchPrograms,
-  assembleProgram
-}
+exports.mapEffect = mapEffect
+exports.batchEffects = batchEffects
+exports.mapProgram = mapProgram
+exports.batchPrograms = batchPrograms
+exports.assembleProgram = assembleProgram
