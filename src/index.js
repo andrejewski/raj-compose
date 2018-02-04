@@ -119,8 +119,22 @@ function batchPrograms (programs, containerView) {
   return {init, update, view, done}
 }
 
-function assembleProgram ({data, view, logic, deps, options}) {
-  return Object.assign({view}, logic(data(deps, options), options))
+function assembleProgram ({
+  data,
+  dataOptions,
+  logic,
+  logicOptions,
+  view,
+  viewOptions
+}) {
+  return Object.assign(
+    {
+      view (model, dispatch) {
+        return view(model, dispatch, viewOptions)
+      }
+    },
+    logic(data(dataOptions), logicOptions)
+  )
 }
 
 exports.mapEffect = mapEffect

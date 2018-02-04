@@ -3,7 +3,8 @@ import {
   mapEffect,
   batchEffects,
   mapProgram,
-  batchPrograms
+  batchPrograms,
+  assembleProgram
 } from '../src'
 
 test('mapEffect() transforms any dispatched messages', t => {
@@ -154,4 +155,41 @@ test('batchPrograms() should return a done which calls sub program dones', t => 
 
   const [state] = program.init
   program.done(state)
+})
+
+test('assembleProgram() should return an assembled program', t => {
+  t.plan(5)
+
+  const dataOptions = {}
+  const logicOptions = {}
+  const viewOptions = {}
+  const dataResult = {}
+
+  function data (options) {
+    t.is(options, dataOptions)
+    return dataResult
+  }
+
+  function logic (data, options) {
+    t.is(data, dataResult)
+    t.is(options, logicOptions)
+
+    return {foo: 'bar'}
+  }
+
+  function view (model, dispatch, options) {
+    t.is(options, viewOptions)
+  }
+
+  const program = assembleProgram({
+    data,
+    dataOptions,
+    view,
+    viewOptions,
+    logic,
+    logicOptions
+  })
+
+  t.is(program.foo, 'bar')
+  program.view()
 })

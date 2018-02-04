@@ -130,9 +130,14 @@ export default batchPrograms(
 )
 ```
 
-### `assembleProgram({data, view, logic, deps, options}): RajProgram`
-The `assembleProgram` function takes three functions: `data(deps, options)`, `view(model, dispatch)`, and `logic(data(deps, options), options)`.
-The `deps`, `options`, and return value of `data` can be anything that makes sense to the program.
+### `assembleProgram({data, view, logic, dataOptions, viewOptions, logicOptions}): RajProgram`
+The `assembleProgram` function takes three functions:
+
+- `data(dataOptions)`
+- `view(model, dispatch, viewOptions)`
+- `logic(data(dataOptions), logicOptions)`
+
+The `dataOptions`, `viewOptions`, `logicOptions`, and return value of `data` can be anything that makes sense to the program.
 This will return a program where `logic()` would return an object containing `{init, update, done, ...}` properties that merge in with `view`.
 
 This function is good for separating the concerns common to most programs: data-fetching, views, and business logic.
