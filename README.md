@@ -145,21 +145,21 @@ The assemble pattern is useful as each function can be tested in isolation.
 Structuring programs in this manner is recommended when data-fetching is involved.
 
 ```js
-import {assembleProgram} from 'raj-compose'
+import { assembleProgram } from 'raj-compose'
 
-export const data = ({httpClient}) => ({
+export const data = ({ httpClient }) => ({
   getPosts (dispatch) {
     httpClient.get('/posts')
-      .then(data => dispatch({data}))
-      .catch(error => dispatch({error}))
+      .then(data => dispatch({ data }))
+      .catch(error => dispatch({ error }))
   }
 })
 
-export function view (model, dispatch) {
+export function view (model, dispatch, options) {
   // show a list of posts
 }
 
-export function logic (data) {
+export function logic (data, options) {
   const init = [
     {
       posts: [],
@@ -170,13 +170,13 @@ export function logic (data) {
 
   function update (msg, model) {
     if (msg.error) {
-      return [{...model, loadError: model.error}]
+      return [{ ...model, loadError: model.error }]
     } else {
-      return [{...model, posts: msg.data.posts}]
+      return [{ ...model, posts: msg.data.posts }]
     }
   }
 
-  return {init, update}
+  return { init, update }
 }
 
 export function makeProgram (httpClient) {
@@ -184,7 +184,7 @@ export function makeProgram (httpClient) {
     data,
     view,
     logic,
-    deps: {httpClient}
+    dataOptions: { httpClient }
   })
 }
 ```
