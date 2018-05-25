@@ -15,13 +15,16 @@ building up large applications from small programs.
 ## Documentation
 The package contains the following utilities:
 
-- `mapEffect(effect, callback)`
-- `batchEffects(effects)`
-- `mapProgram(program, callback)`
-- `batchPrograms(programs, containerView)`
-- `assembleProgram({data, view, logic, deps, options})`
+- [`mapEffect(effect, callback)`](#mapeffect)
+- [`batchEffects(effects)`](#batcheffects)
+- [`mapProgram(program, callback)`](#mapprogram)
+- [`batchPrograms(programs, containerView)`](#batchprograms)
+- [`assembleProgram({ data, view, logic, deps, options })`](#assembleprogram)
 
-### `mapEffect(effect: function?, callback(any): any): function?`
+### `mapEffect`
+
+> `mapEffect(effect: function?, callback(any): any): function?`
+
 The `mapEffect` function "lifts" a given `effect` so that `callback` transforms
   each message produced by that effect before dispatch.
 
@@ -37,7 +40,7 @@ We use `mapEffect` to wrap each message in an "important" wrapper.
 
 ```js
 import assert from 'assert'
-import {mapEffect} from 'raj-compose'
+import { mapEffect } from 'raj-compose'
 
 const effect = dispatch => {
   dispatch('Hello')
@@ -55,12 +58,15 @@ importantEffect(message => {
 })
 
 assert.deepEqual(messages, [
-  {type: 'important', value: 'Hello'},
-  {type: 'important', value: 'World'}
+  { type: 'important', value: 'Hello' },
+  { type: 'important', value: 'World' }
 ])
 ```
 
-### `batchEffects(effects: Array<function?>): function`
+### `batchEffects`
+
+> `batchEffects(effects: Array<function?>): function`
+
 The `batchEffects` function takes an array of `effects` and returns a new
   function which will call each effect.
 If an effect is truthy but not a function, an error will throw.
@@ -71,7 +77,7 @@ We use `batchEffects` to combine them into a single effect.
 
 ```js
 import assert from 'assert'
-import {batchEffects} from 'raj-compose'
+import { batchEffects } from 'raj-compose'
 
 const one = dispatch => dispatch('Hello')
 const two = dispatch => dispatch('World')
@@ -88,7 +94,10 @@ assert.deepEqual(messages, [
 ])
 ```
 
-### `mapProgram(program: RajProgram, callback): RajProgram`
+### `mapProgram`
+
+> `mapProgram(program: RajProgram, callback): RajProgram`
+
 Like `mapEffect`, `mapProgram` "lifts" all messages from `program` with the  `callback` function and returns a new program.
 If `program` is not shaped like a Raj program, an error will throw.
 If `callback` is not a function, an error will throw.
@@ -103,7 +112,10 @@ This function encapsulates all program messages for its parent program to pass d
 The new program's `update()` parameters are the same as the original's.
 The `view()` `state` is the child program's state and `dispatch` is the parent's dispatch function.
 
-### `batchPrograms(programs: Array<RajProgram>, containerView: function): RajProgram`
+### `batchPrograms`
+
+> `batchPrograms(programs: Array<RajProgram>, containerView: function): RajProgram`
+
 The `batchPrograms` function takes an array of programs and a `containerView` and create a new program which manages those child programs.
 If any item in the `programs` array is not a program, an error will throw.
 If `containerView` is not a function, an error will throw.
@@ -115,7 +127,7 @@ We have a main view and a sidebar view that we would like to display at the same
 
 ```js
 import React from 'react'
-import {batchPrograms} from 'raj-compose'
+import { batchPrograms } from 'raj-compose'
 import mainProgram from './main'
 import sidebarProgram from './sidebar'
 
@@ -130,7 +142,10 @@ export default batchPrograms(
 )
 ```
 
-### `assembleProgram({data, view, logic, dataOptions, viewOptions, logicOptions}): RajProgram`
+### `assembleProgram`
+
+> `assembleProgram({data, view, logic, dataOptions, viewOptions, logicOptions}): RajProgram`
+
 The `assembleProgram` function takes three functions:
 
 - `data(dataOptions)`
