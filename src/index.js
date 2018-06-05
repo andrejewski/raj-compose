@@ -45,13 +45,12 @@ function mapProgram (program, callback) {
   ensureProgram(program)
   invariant(typeof callback === 'function', 'callback must be a function')
 
-  const [state, effect] = program.init
-  const init = [state, mapEffect(effect, callback)]
+  const start = program.init
+  const init = [start[0], mapEffect(start[1], callback)]
 
   function update (msg, state) {
-    const [nextState, nextEffect] = program.update(msg, state)
-    const effect = mapEffect(nextEffect, callback)
-    return [nextState, effect]
+    const change = program.update(msg, state)
+    return [change[0], mapEffect(change[1], callback)]
   }
 
   function view (state, dispatch) {
@@ -70,23 +69,24 @@ function batchPrograms (programs, containerView) {
   const effects = []
   const programCount = programs.length
   for (let i = 0; i < programCount; i++) {
-    const program = programs[i]
+    const index = i
+    const program = programs[index]
     ensureProgram(program)
 
-    const tagger = data => ({ index: i, data })
-    embeds.push(mapProgram(program, tagger))
-    states.push(program.init[0])
-    effects.push(program.init[1])
+    const embed = mapProgram(program, data => ({ index, data }))
+    embeds.push(embed)
+    states.push(embed.init[0])
+    effects.push(embed.init[1])
   }
 
   const init = [states, batchEffects(effects)]
 
   function update (msg, state) {
     const { index, data } = msg
-    const [newProgramState, effect] = embeds[index].update(data, state[index])
+    const change = embeds[index].update(data, state[index])
     const newState = state.slice(0)
-    newState[index] = newProgramState
-    return [newState, effect]
+    newState[index] = change[0]
+    return [newState, change[1]]
   }
 
   function view (state, dispatch) {
