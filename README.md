@@ -28,11 +28,11 @@ The package contains the following utilities:
 The `mapEffect` function "lifts" a given `effect` so that `callback` transforms
   each message produced by that effect before dispatch.
 
-The `mapEffect` function accepts a `effect` function or a falsey value and a
+The `mapEffect` function accepts a `effect` function or a falsy value and a
   `callback` function.
 If the `effect` is truthy but not a function, an error will throw.
 If the `callback` is not a function, an error will throw.
-The `mapEffect` returns either the falsey `effect` value or a new effect function.
+The `mapEffect` returns either the falsy `effect` value or a new effect function.
 
 #### Example
 We want to distinguish the messages dispatched by an effect.
