@@ -13,8 +13,7 @@
     "url": "https://github.com/andrejewski/raj-compose/issues"
   },
   "dependencies": {
-    "invariant": "^2.2.2",
-    "tagmeme": "0.0.7"
+    "invariant": "^2.2.2"
   },
   "devDependencies": {
     "ava": "^0.25.0",

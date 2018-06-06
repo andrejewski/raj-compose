@@ -1,4 +1,3 @@
-const {union} = require('tagmeme')
 const invariant = require('invariant')
 
 function mapEffect (effect, callback) {
@@ -46,13 +45,12 @@ function mapProgram (program, callback) {
   ensureProgram(program)
   invariant(typeof callback === 'function', 'callback must be a function')
 
-  const [state, effect] = program.init
-  const init = [state, mapEffect(effect, callback)]
+  const start = program.init
+  const init = [start[0], mapEffect(start[1], callback)]
 
   function update (msg, state) {
-    const [nextState, nextEffect] = program.update(msg, state)
-    const effect = mapEffect(nextEffect, callback)
-    return [nextState, effect]
+    const change = program.update(msg, state)
+    return [change[0], mapEffect(change[1], callback)]
   }
 
   function view (state, dispatch) {
@@ -63,41 +61,32 @@ function mapProgram (program, callback) {
 }
 
 function batchPrograms (programs, containerView) {
-  for (let i = 0; i < programs.length; i++) {
-    ensureProgram(programs[i])
-  }
+  invariant(Array.isArray(programs), 'programs must be an array')
   invariant(typeof containerView === 'function', 'containerView must be a function')
 
-  const kinds = programs.map(
-    ({displayName}, index) => (displayName || 'Program' + index) + 'Msg'
-  )
-  const Msg = union(kinds)
-  const taggers = kinds.map(kind => Msg[kind])
-  const embeds = programs.map(
-    (program, index) => mapProgram(program, taggers[index])
-  )
+  const embeds = []
+  const states = []
+  const effects = []
+  const programCount = programs.length
+  for (let i = 0; i < programCount; i++) {
+    const index = i
+    const program = programs[index]
+    ensureProgram(program)
 
-  const [states, initialEffects] = embeds.reduce(
-    ([states, effects], {init: [state, effect]}) => [
-      [...states, state],
-      [...effects, effect]
-    ],
-    [[], []]
-  )
-  const init = [states, batchEffects(initialEffects)]
+    const embed = mapProgram(program, data => ({ index, data }))
+    embeds.push(embed)
+    states.push(embed.init[0])
+    effects.push(embed.init[1])
+  }
+
+  const init = [states, batchEffects(effects)]
 
   function update (msg, state) {
-    return Msg.match(msg, embeds.reduce((cases, embed, index) => {
-      const kind = kinds[index]
-      cases[kind] = programMsg => {
-        const programState = state[index]
-        const [nextProgramState, effect] = embed.update(programMsg, programState)
-        const newState = state.slice(0)
-        newState[index] = nextProgramState
-        return [newState, effect]
-      }
-      return cases
-    }, {}))
+    const { index, data } = msg
+    const change = embeds[index].update(data, state[index])
+    const newState = state.slice(0)
+    newState[index] = change[0]
+    return [newState, change[1]]
   }
 
   function view (state, dispatch) {
@@ -109,11 +98,12 @@ function batchPrograms (programs, containerView) {
   }
 
   function done (state) {
-    embeds.forEach((embed, index) => {
-      if (embed.done) {
-        embed.done(state[index])
+    for (let i = 0; i < programCount; i++) {
+      const done = embeds[i].done
+      if (done) {
+        done(state[i])
       }
-    })
+    }
   }
 
   return {init, update, view, done}

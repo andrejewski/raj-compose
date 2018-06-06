@@ -116,11 +116,11 @@ The `view()` `state` is the child program's state and `dispatch` is the parent's
 
 > `batchPrograms(programs: Array<RajProgram>, containerView: function): RajProgram`
 
-The `batchPrograms` function takes an array of programs and a `containerView` and create a new program which manages those child programs.
+The `batchPrograms` function takes an array of `programs` and a `containerView` function and creates a new program which manages those child programs.
 If any item in the `programs` array is not a program, an error will throw.
 If `containerView` is not a function, an error will throw.
 
-The containerView receives an array of function, each respective to the programs in the `programs` array that when called return a view to nest somewhere in the parent view.
+The `containerView` receives an array of functions which return views for each respective program.
 
 #### Example
 We have a main view and a sidebar view that we would like to display at the same time. We are using React as our view layer so we are using JSX to describe our HTML. We use the `batchPrograms` to unite the two programs in the same app view.
