@@ -7,7 +7,7 @@ function mapEffect (effect, callback) {
     return effect
   }
 
-  invariant(typeof effect === 'function', 'Effects must be functions or falsey')
+  invariant(typeof effect === 'function', 'Effects must be functions or falsy')
 
   return function _mapEffect (dispatch) {
     function intercept (message) {
@@ -21,7 +21,10 @@ function mapEffect (effect, callback) {
 function batchEffects (effects) {
   for (let i = 0; i < effects.length; i++) {
     const effect = effects[i]
-    invariant(!effect || typeof effect === 'function', 'Effects must be functions or falsey')
+    invariant(
+      !effect || typeof effect === 'function',
+      'Effects must be functions or falsy'
+    )
   }
 
   return function _batchEffects (dispatch) {
@@ -36,9 +39,18 @@ function batchEffects (effects) {
 function ensureProgram (program) {
   invariant(program, 'program must be truthy')
   invariant(Array.isArray(program.init), 'program.init must be an array')
-  invariant(typeof program.update === 'function', 'program.update must be a function')
-  invariant(typeof program.view === 'function', 'program.view must be a function')
-  invariant(!program.done || typeof program.done === 'function', 'program.done must be a function if included')
+  invariant(
+    typeof program.update === 'function',
+    'program.update must be a function'
+  )
+  invariant(
+    typeof program.view === 'function',
+    'program.view must be a function'
+  )
+  invariant(
+    !program.done || typeof program.done === 'function',
+    'program.done must be a function if included'
+  )
 }
 
 function mapProgram (program, callback) {
@@ -57,12 +69,15 @@ function mapProgram (program, callback) {
     return program.view(state, msg => dispatch(callback(msg)))
   }
 
-  return {init, update, view, done: program.done}
+  return { init, update, view, done: program.done }
 }
 
 function batchPrograms (programs, containerView) {
   invariant(Array.isArray(programs), 'programs must be an array')
-  invariant(typeof containerView === 'function', 'containerView must be a function')
+  invariant(
+    typeof containerView === 'function',
+    'containerView must be a function'
+  )
 
   const embeds = []
   const states = []
@@ -90,8 +105,8 @@ function batchPrograms (programs, containerView) {
   }
 
   function view (state, dispatch) {
-    const programViews = embeds.map(
-      (embed, index) => () => embed.view(state[index], dispatch)
+    const programViews = embeds.map((embed, index) => () =>
+      embed.view(state[index], dispatch)
     )
 
     return containerView(programViews)
@@ -106,7 +121,7 @@ function batchPrograms (programs, containerView) {
     }
   }
 
-  return {init, update, view, done}
+  return { init, update, view, done }
 }
 
 function assembleProgram ({

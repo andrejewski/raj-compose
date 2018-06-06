@@ -23,10 +23,10 @@ test('mapEffect() transforms any dispatched messages', t => {
   t.deepEqual(results, [2, 3, 4], 'results should have been incremented')
 })
 
-test('mapEffect() should not wrap a falsey effect', t => {
+test('mapEffect() should not wrap a falsy effect', t => {
   /*
     The reasoning for this test is that commands can
-    be falsey and not run by the runtime.
+    be falsy and not run by the runtime.
 
     map() should align with this behavior.
   */
@@ -63,19 +63,19 @@ test('batchEffects() should return a single effect', t => {
 
 test('batchEffects() should pass dispatch to each effect', t => {
   const makeEffect = dispatchVal => dispatch => dispatch(dispatchVal)
-  const vals = [1, 2, 3]
-  const effects = batchEffects(vals.map(makeEffect))
+  const values = [1, 2, 3]
+  const effects = batchEffects(values.map(makeEffect))
 
   const results = []
   effects(result => results.push(result))
 
-  t.deepEqual(results, vals)
+  t.deepEqual(results, values)
 })
 
-test('batchEffects() should not call falsey values', t => {
+test('batchEffects() should not call falsy values', t => {
   /*
     The reasoning for this test is that commands can
-    be falsey and not run by the runtime.
+    be falsy and not run by the runtime.
 
     batch() should align with this behavior.
   */
@@ -88,9 +88,9 @@ test('batchEffects() should not call falsey values', t => {
 
 test('batchEffects() should return the effects return values', t => {
   const makeEffect = returnVal => dispatch => returnVal
-  const vals = [1, 2, 3]
-  const effects = batchEffects(vals.map(makeEffect))
-  t.deepEqual(effects(), vals)
+  const values = [1, 2, 3]
+  const effects = batchEffects(values.map(makeEffect))
+  t.deepEqual(effects(), values)
 })
 
 test('batchEffects() should throw if any effect is a truthy non-function', t => {
@@ -144,10 +144,10 @@ test('batchPrograms() program.done should call sub program done functions', t =>
     view () {}
   }
 
-  const program = batchPrograms([
-    subProgramWithDone,
-    subProgramWithoutDone
-  ], () => {})
+  const program = batchPrograms(
+    [subProgramWithDone, subProgramWithoutDone],
+    () => {}
+  )
 
   const [state] = program.init
   program.done(state)
@@ -170,7 +170,7 @@ test('assembleProgram() should return an assembled program', t => {
     t.is(data, dataResult)
     t.is(options, logicOptions)
 
-    return {foo: 'bar'}
+    return { foo: 'bar' }
   }
 
   function view (model, dispatch, options) {
