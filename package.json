@@ -23,7 +23,7 @@
     "babel-preset-stage-3": "^6.24.1",
     "fixpack": "^2.3.1",
     "prettier": "^1.13.4",
-    "standard": "^11.0.0"
+    "standard": "^14.3.1"
   },
   "files": [
     "lib"
